@@ -1,4 +1,4 @@
-Portfolio Optimization Using Sentiment Analysis
+##Portfolio Optimization Using Sentiment Analysis
 
 This project demonstrates a sentiment-driven portfolio optimization model, where sentiment analysis of news headlines is used to adjust the weights of different sectors in a portfolio. The goal is to dynamically optimize the portfolio by increasing exposure to sectors with positive sentiment and reducing exposure to sectors with negative sentiment.
 
