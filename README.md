@@ -1,76 +1,97 @@
-# Sentiment-Driven Portfolio Optimizer
+# Stock Prediction and Portfolio Optimization Using Sentiment Analysis
 
-## Overview
-The **Sentiment-Driven Portfolio Optimizer** is an automated system that uses sentiment analysis on financial news headlines to adjust portfolio weights across different sectors. The model classifies news headlines into one of five sectors (such as Technology, Energy, Healthcare, Finance, and Geopolitical), performs sentiment analysis, and adjusts the weights of the portfolio based on the sentiment of each sector. This approach aims to help investors optimize their portfolio based on market sentiment.
+This project demonstrates a sentiment-driven portfolio optimization model, where sentiment analysis of news headlines is used to adjust the weights of different sectors in a portfolio. The goal is to dynamically optimize the portfolio by increasing exposure to sectors with positive sentiment and reducing exposure to sectors with negative sentiment.
 
-The optimizer dynamically reallocates weights in the portfolio based on the sentiment (positive, neutral, or negative) observed for each sector, which could potentially improve returns and reduce risks.
+## Project Overview
 
-## Project Structure
+The system is designed to:
+1. **Fetch news articles** for various sectors based on specific keywords.
+2. **Classify the news** into relevant sectors such as Technology, Energy, Healthcare, etc.
+3. **Perform sentiment analysis** on each sector's news to compute sentiment scores.
+4. **Adjust portfolio weights** based on the sentiment scores, optimizing the sector allocation.
 
-### `main.py`
-This is the central script that integrates all the components of the optimizer. It:
-- Fetches news articles from the past 10 days based on a list of predefined keywords.
-- Classifies news headlines into one of five sectors: **Technology**, **Energy**, **Healthcare**, **Finance**, and **Geopolitical**.
-- Analyzes the sentiment of the classified news for each sector and calculates sentiment scores.
-- Adjusts the portfolio weights dynamically based on the sentiment scores for each sector.
+This approach allows for a more dynamic and responsive portfolio strategy, reacting to the latest market sentiment as reflected in the news.
 
-#### Key Functions:
-- **Fetching News**: It fetches headlines from a news API (e.g., NewsAPI) for a given period.
-- **Classifying Sectors**: Headlines are classified based on predefined sector-specific keywords using the `classify_sector` function.
-- **Sentiment Analysis**: The sentiment of the classified headlines is analyzed using a pre-trained model in the `analyze_combined_sentiment` function.
-- **Adjusting Portfolio**: Portfolio weights are adjusted based on the sentiment analysis using `adjust_portfolio_weights`.
+## Key Components
 
-### `fetch_news.py`
-This module contains functions to fetch news headlines for specific dates and keywords.
+### 1. **News Fetching**
+   The system fetches news articles for each sector over the past 10 days. It uses a specified set of keywords related to each sector (e.g., “Technology”, “Energy”, “Healthcare”) to search for relevant news articles using an external news API.
 
-#### Key Functions:
-- **`fetch_broader_market_news(API_KEY, keywords, from_date, to_date)`**: This function makes an API call to fetch market news articles between the specified date range (`from_date` to `to_date`). The articles are filtered using a list of keywords related to economic and financial factors.
-  
-- **`get_past_n_days(n)`**: This function calculates the dates for the last `n` days (in this case, 10 days) and returns them in the format required for the `fetch_broader_market_news` function.
+### 2. **Sector Classification**
+   Once the news is fetched, the system classifies each article into a sector (Technology, Finance, Energy, etc.) based on predefined keywords and machine learning models. This classification helps in analyzing how sentiment varies across different sectors.
 
-### `classify_sector.py`
-This file contains the logic for classifying news headlines into sectors. Each sector is associated with a list of keywords.
+### 3. **Sentiment Analysis**
+   After classifying the news into respective sectors, the sentiment analysis model is used to compute sentiment scores for each sector. The sentiment score reflects the overall market sentiment for a particular sector based on the headlines. Positive scores indicate favorable sentiment, while negative scores reflect pessimistic views.
 
-#### Key Function:
-- **`classify_sector(headlines)`**: This function takes in a list of news headlines, checks for the presence of sector-related keywords, and classifies the headlines into appropriate sectors (Technology, Energy, Healthcare, Finance, and Geopolitical). It returns a dictionary mapping each sector to its respective headlines.
+### 4. **Portfolio Adjustment**
+   The portfolio consists of different sectors like Technology, Energy, Healthcare, Finance, etc. Based on the sentiment scores for each sector, the portfolio weights are adjusted. Positive sentiment will increase the exposure to that sector, while negative sentiment will reduce its weight in the portfolio. The adjusted portfolio provides a more data-driven approach to asset allocation.
 
-### `sentiment_analysis.py`
-This module handles the sentiment analysis of the classified headlines. The function used here analyzes the sentiment of each headline and assigns sentiment scores.
+## File Structure
 
-#### Key Function:
-- **`analyze_combined_sentiment(data)`**: This function takes in the classified headlines (from `classify_sector`) and analyzes the sentiment using a sentiment analysis model (e.g., Hugging Face’s BERT-based models). It returns a sentiment score along with the probability of positive, neutral, and negative sentiment for each sector on a specific day.
+- **`main.py`**: The main script that ties together the different components. It fetches news, classifies sectors, performs sentiment analysis, and adjusts portfolio weights.
+- **`fetch_news.py`**: Contains the functionality to fetch news articles for various sectors over a specified time period.
+- **`classify_sector.py`**: Provides the sector classification logic based on the content of the news articles.
+- **`sentiment_analysis.py`**: Implements the sentiment analysis model to evaluate the sentiment of the classified news headlines.
+- **`adjust_portfolio.py`**: Contains the logic to adjust the portfolio weights based on the sentiment analysis results.
 
-### `adjust_portfolio.py`
-The logic in this module adjusts the portfolio weights based on sentiment analysis results. If a sector shows positive sentiment, its weight may increase, and if it shows negative sentiment, its weight may decrease.
+## How It Works
 
-#### Key Function:
-- **`adjust_portfolio_weights(sentiment_results, portfolio)`**: This function takes the sentiment analysis results and the initial portfolio weights. It adjusts the portfolio weights based on the sentiment of each sector. The higher the positive sentiment, the more weight is assigned to the corresponding sector, while negative sentiment results in a reduced weight. The portfolio is adjusted dynamically for each day’s sentiment.
+### 1. Fetching News
+The script fetches news for the last 10 days using the specified keywords for each sector (Technology, Finance, Energy, etc.). The news articles are retrieved from an external news API.
 
-## Workflow Overview
+### 2. Classifying News
+Once the news articles are fetched, the `classify_sector` function classifies the headlines into various sectors. Each headline is tagged with the appropriate sector (e.g., Technology, Energy, Healthcare).
 
-1. **Fetching News**: The system begins by fetching the latest news for the past `n` days using the `get_past_n_days` function. It then uses the `fetch_broader_market_news` function to collect the headlines for each day.
+### 3. Sentiment Analysis
+Sentiment analysis is performed on the classified news headlines using a pre-trained sentiment analysis model. For each sector, sentiment scores are computed:
+- **Positive Sentiment**: Indicates optimism about the sector.
+- **Negative Sentiment**: Indicates pessimism about the sector.
+- **Neutral Sentiment**: Indicates neutrality or lack of sentiment in the headlines.
 
-2. **Classifying Headlines**: Once the headlines are fetched, the `classify_sector` function categorizes them into their respective sectors based on the presence of sector-specific keywords.
+### 4. Portfolio Adjustment
+The adjusted portfolio is calculated based on the sentiment scores for each sector. A positive sentiment score leads to an increase in the portfolio's weight for that sector, while a negative sentiment reduces the weight.
 
-3. **Sentiment Analysis**: The `analyze_combined_sentiment` function is used to process the classified headlines. It calculates a sentiment score for each sector, which indicates whether the sentiment is positive, neutral, or negative for the given sector on that day.
+### Example Workflow:
 
-4. **Adjusting Portfolio Weights**: Finally, the `adjust_portfolio_weights` function takes the sentiment results and adjusts the portfolio weights accordingly. Positive sentiment increases the weight of a sector, while negative sentiment decreases it.
+```python
+from fetch_news import fetch_broader_market_news, get_past_n_days
+import classify_sector
+from sentiment_analysis import analyze_combined_sentiment
+from adjust_portfolio import adjust_portfolio_weights
 
-## Sample Output
+# Define the number of days for fetching news
+past_days = get_past_n_days(10)
 
-The output of the `main.py` script includes:
-1. **Sentiment Results**: For each day, sentiment scores are computed for all sectors based on the analyzed headlines.
-   
-   Example:
-   ```python
-   Sentiment Results:
-   {
-       '2025-01-06': {'Energy': {'sentiment_score': 0.1, 'positive_prob': 0.6, 'neutral_prob': 0.3, 'negative_prob': 0.1}},
-       '2025-01-07': {'Finance': {'sentiment_score': -0.5, 'positive_prob': 0.2, 'neutral_prob': 0.5, 'negative_prob': 0.3}}
-   }
+# Fetch the news headlines for the past 10 days
+daily_headlines = fetch_broader_market_news(API_KEY, KEYWORDS, past_days)
 
-    \item \textbf{NewsAPI}: For providing access to the financial news articles.
-    \item \textbf{Hugging Face}: For the pre-trained sentiment analysis models.
-\end{itemize}
+# Classify the fetched headlines into sectors
+sector_classification = classify_sector.classify_sector(daily_headlines)
 
-\end{document}
+# Perform sentiment analysis on the classified sectors
+sentiment_results = analyze_combined_sentiment(sector_classification)
+
+# Adjust the portfolio weights based on sentiment
+adjusted_portfolio = adjust_portfolio_weights(sentiment_results, PORTFOLIO)
+
+# Print adjusted portfolio weights
+for sector, weight in adjusted_portfolio.items():
+    print(f"{sector}: {weight:.2f}")
+
+
+Sentiment Results:
+{
+    '2025-01-15': {'Technology': {'sentiment_score': 0.5, 'positive_prob': 0.7, 'negative_prob': 0.1, 'neutral_prob': 0.2}},
+    '2025-01-14': {'Energy': {'sentiment_score': -0.3, 'positive_prob': 0.2, 'negative_prob': 0.6, 'neutral_prob': 0.2}},
+    '2025-01-13': {'Finance': {'sentiment_score': -0.8, 'positive_prob': 0.1, 'negative_prob': 0.7, 'neutral_prob': 0.2}},
+    ...
+}
+
+
+Adjusted Portfolio Weights:
+    Technology: 0.25
+    Energy: 0.15
+    Healthcare: 0.20
+    Finance: 0.10
+    Geopolitical: 0.30
+
